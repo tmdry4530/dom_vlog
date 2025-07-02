@@ -6,14 +6,14 @@ import { getUserByUsername } from '@/lib/db';
 export async function POST(request: Request) {
   const { username, password } = await request.json();
   
-  const cookieStore = cookies();
-  const user = await getUserByUsername(username, cookieStore);
+  const cookieStore = await cookies();
+  const user = await getUserByUsername(username);
 
   if (!user || !user.email) {
     return NextResponse.json({ message: 'Invalid username or password' }, { status: 401 });
   }
 
-  const supabase = createClient(cookieStore);
+  const supabase = await createClient();
   
   const { error } = await supabase.auth.signInWithPassword({
     email: user.email,
