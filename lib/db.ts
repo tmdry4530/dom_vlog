@@ -38,7 +38,7 @@ function createSlug(text: string): string {
 // 유저 관련 함수
 export async function getUserByUsername(username: string): Promise<{ email: string } | null> {
   noStore();
-  const supabase = createClient();
+  const supabase = await createClient();
   const { data, error } = await supabase
     .from('profiles')
     .select('email')
@@ -56,7 +56,7 @@ export async function getUserByUsername(username: string): Promise<{ email: stri
 // 포스트 관련 함수들
 export async function getAllPosts(): Promise<PostWithDetails[]> {
   noStore();
-  const supabase = createClient();
+  const supabase = await createClient();
 
   // 1. 모든 포스트 데이터 조회 (JavaScript에서 필터링)
   const { data: allPosts, error: postsError } = await supabase
@@ -136,7 +136,7 @@ export async function getPublishedPosts(): Promise<PostWithDetails[]> {
 
 export async function getPostById(id: string): Promise<PostWithDetails | null> {
   noStore();
-  const supabase = createClient();
+  const supabase = await createClient();
 
   // 1. 기본 포스트 데이터 조회
   const { data: post, error: postError } = await supabase
@@ -194,7 +194,7 @@ export async function getPostBySlug(
   slug: string
 ): Promise<PostWithDetails | null> {
   noStore();
-  const supabase = createClient();
+  const supabase = await createClient();
 
   // 1. 기본 포스트 데이터 조회
   const { data: post, error: postError } = await supabase
@@ -258,7 +258,7 @@ export async function createPost(postData: {
   featuredImage?: string;
 }): Promise<BlogPost | null> {
   noStore();
-  const supabase = createClient();
+  const supabase = await createClient();
 
   const slug = createSlug(postData.title);
 
@@ -338,7 +338,7 @@ export async function updatePost(
   updates: Partial<BlogPost>
 ): Promise<BlogPost | null> {
   noStore();
-  const supabase = createClient();
+  const supabase = await createClient();
 
   const updateData: any = { ...updates };
   delete updateData.id;
@@ -412,7 +412,7 @@ export async function updatePost(
 
 export async function deletePost(id: string): Promise<boolean> {
   noStore();
-  const supabase = createClient();
+  const supabase = await createClient();
 
   const { error } = await supabase.from("posts").delete().eq("id", id);
 
@@ -426,7 +426,7 @@ export async function deletePost(id: string): Promise<boolean> {
 
 export async function incrementPostView(postId: string): Promise<boolean> {
   noStore();
-  const supabase = createClient();
+  const supabase = await createClient();
 
   // 현재 조회수 가져오기
   const { data: post, error: fetchError } = await supabase
@@ -456,7 +456,7 @@ export async function incrementPostView(postId: string): Promise<boolean> {
 
 export async function getPopularPosts(): Promise<Partial<BlogPostSummary>[]> {
   noStore();
-  const supabase = createClient();
+  const supabase = await createClient();
 
   const { data, error } = await supabase
     .from("posts")
@@ -476,7 +476,7 @@ export async function getPopularPosts(): Promise<Partial<BlogPostSummary>[]> {
 // 카테고리 관련 함수들
 export async function getAllCategories(): Promise<CategoryWithStats[]> {
   noStore();
-  const supabase = createClient();
+  const supabase = await createClient();
 
   const { data: categories, error } = await supabase
     .from("categories")
@@ -505,7 +505,7 @@ export async function getAllCategories(): Promise<CategoryWithStats[]> {
 
 export async function getCategoryById(id: string): Promise<Category | null> {
   noStore();
-  const supabase = createClient();
+  const supabase = await createClient();
 
   const { data: category, error } = await supabase
     .from("categories")
@@ -525,7 +525,7 @@ export async function getCategoryBySlug(
   slug: string
 ): Promise<Category | null> {
   noStore();
-  const supabase = createClient();
+  const supabase = await createClient();
 
   const { data: category, error } = await supabase
     .from("categories")
@@ -547,7 +547,7 @@ export async function createCategory(categoryData: {
   color?: string;
 }): Promise<Category | null> {
   noStore();
-  const supabase = createClient();
+  const supabase = await createClient();
 
   const slug = createSlug(categoryData.name);
 
@@ -575,7 +575,7 @@ export async function getPostsByCategory(
   categoryId: string
 ): Promise<PostWithDetails[]> {
   noStore();
-  const supabase = createClient();
+  const supabase = await createClient();
 
   const { data: posts, error } = await supabase
     .from("posts")
@@ -609,7 +609,7 @@ export async function addPostToCategory(
   isAiSuggested: boolean = false
 ): Promise<boolean> {
   noStore();
-  const supabase = createClient();
+  const supabase = await createClient();
 
   const { error } = await supabase.from("post_categories").insert({
     postId,
@@ -631,7 +631,7 @@ export async function removePostFromCategory(
   categoryId: string
 ): Promise<boolean> {
   noStore();
-  const supabase = createClient();
+  const supabase = await createClient();
 
   const { error } = await supabase
     .from("post_categories")
@@ -650,7 +650,7 @@ export async function removePostFromCategory(
 // 프로필 관련 함수들
 export async function getProfile(userId: string): Promise<Profile | null> {
   noStore();
-  const supabase = createClient();
+  const supabase = await createClient();
 
   const { data: profile, error } = await supabase
     .from("profiles")
@@ -668,7 +668,7 @@ export async function getProfile(userId: string): Promise<Profile | null> {
 
 export async function getProfileById(id: string): Promise<Profile | null> {
   noStore();
-  const supabase = createClient();
+  const supabase = await createClient();
 
   const { data: profile, error } = await supabase
     .from("profiles")
@@ -689,7 +689,7 @@ export async function updateProfile(
   updates: Partial<Profile>
 ): Promise<Profile | null> {
   noStore();
-  const supabase = createClient();
+  const supabase = await createClient();
 
   const updateData = { ...updates };
   delete updateData.id;
@@ -716,7 +716,7 @@ export async function createSeoScore(
   seoData: Omit<SeoScore, "id" | "createdAt" | "updatedAt">
 ): Promise<SeoScore | null> {
   noStore();
-  const supabase = createClient();
+  const supabase = await createClient();
 
   const { data: seoScore, error } = await supabase
     .from("seo_scores")
@@ -737,7 +737,7 @@ export async function updateSeoScore(
   updates: Partial<SeoScore>
 ): Promise<SeoScore | null> {
   noStore();
-  const supabase = createClient();
+  const supabase = await createClient();
 
   const updateData = { ...updates };
   delete updateData.id;
@@ -762,7 +762,7 @@ export async function updateSeoScore(
 // 검색 관련 함수들
 export async function searchPosts(query: string): Promise<PostWithDetails[]> {
   noStore();
-  const supabase = createClient();
+  const supabase = await createClient();
 
   const { data: posts, error } = await supabase
     .from("posts")
