@@ -7,7 +7,8 @@ export async function POST(request: Request) {
   const { username, password } = await request.json();
   
   const cookieStore = await cookies();
-  const user = await getUserByUsername(username);
+  const user = await getUserByUsername(username, cookieStore);
+
 
   if (!user || !user.email) {
     return NextResponse.json({ message: 'Invalid username or password' }, { status: 401 });
