@@ -1,0 +1,108 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+# Cursor Rules 가이드
+
+## 개요
+"참돔이의 일기장" 블로그 플랫폼 개발을 위한 Cursor AI 규칙 모음입니다.
+
+## 규칙 파일 목록
+
+### 📁 프로젝트 구조
+**[project-structure.mdc](mdc:.cursor/rules/project-structure.mdc)**
+- 프로젝트 디렉토리 구조
+- 파일 명명 규칙
+- 가져오기 규칙
+- App Router 패턴
+
+### 🧩 컴포넌트 개발
+**[components-guide.mdc](mdc:.cursor/rules/components-guide.mdc)**
+- React 컴포넌트 패턴
+- shadcn/ui 활용법
+- 서버/클라이언트 컴포넌트
+- 접근성 가이드라인
+
+### 🗄️ 데이터베이스
+**[database-schema.mdc](mdc:.cursor/rules/database-schema.mdc)**
+- PostgreSQL 스키마 설계
+- 마이그레이션 관리
+- 쿼리 최적화
+- 데이터 무결성
+
+### 🎨 스타일링
+**[styling-guide.mdc](mdc:.cursor/rules/styling-guide.mdc)**
+- TailwindCSS 컨벤션
+- 다크 테마 시스템
+- 반응형 디자인
+- 컴포넌트 스타일링
+
+### ⚡ Next.js 규칙
+**[nextjs-conventions.mdc](mdc:.cursor/rules/nextjs-conventions.mdc)**
+- App Router 사용법
+- 서버 액션 패턴
+- 메타데이터 관리
+- 성능 최적화
+
+### 📝 TypeScript
+**[typescript-conventions.mdc](mdc:.cursor/rules/typescript-conventions.mdc)**
+- 타입 정의 규칙
+- 컴포넌트 타입 패턴
+- 유틸리티 타입 활용
+- 타입 안전성
+
+### 🔄 개발 워크플로우
+**[development-workflow.mdc](mdc:.cursor/rules/development-workflow.mdc)**
+- 개발 우선순위
+- 코드 품질 관리
+- Git 워크플로우
+- 테스팅 전략
+
+## 핵심 원칙
+
+### 1. 사용자 수정 코드 보존
+- 기존 코드 되돌리지 않음
+- 점진적 개선 방식
+- 최소 침습적 변경
+
+### 2. 모던 개발 표준
+- TypeScript Strict 모드
+- Next.js App Router
+- 서버 컴포넌트 우선
+- 접근성 고려
+
+### 3. 성능 최적화
+- 번들 크기 최소화
+- 이미지 최적화
+- 코드 분할
+- 캐싱 전략
+
+## 현재 개발 상황
+
+### ✅ 완료된 부분
+- UI/UX 컴포넌트 구현
+- 데이터베이스 스키마 설계
+- 기본 라우팅 구조
+- 스타일 시스템
+
+### 🚧 진행 중
+- 데이터베이스 연결 (시뮬레이션 상태)
+- 서버 액션 구현
+
+### 📋 예정된 작업
+1. 실제 데이터베이스 연결
+2. 에러 처리 시스템
+3. SEO 최적화
+4. 사용자 인증
+5. 댓글 시스템
+
+## 사용 방법
+
+1. **새로운 컴포넌트 개발**: [components-guide.mdc](mdc:.cursor/rules/components-guide.mdc) 참조
+2. **데이터베이스 작업**: [database-schema.mdc](mdc:.cursor/rules/database-schema.mdc) 참조
+3. **스타일링 작업**: [styling-guide.mdc](mdc:.cursor/rules/styling-guide.mdc) 참조
+4. **Next.js 기능**: [nextjs-conventions.mdc](mdc:.cursor/rules/nextjs-conventions.mdc) 참조
+5. **TypeScript 작업**: [typescript-conventions.mdc](mdc:.cursor/rules/typescript-conventions.mdc) 참조
+
+

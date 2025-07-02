@@ -1,0 +1,135 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# 컴포넌트 개발 가이드
+
+## 컴포넌트 아키텍처
+
+### 핵심 컴포넌트
+
+#### 레이아웃 컴포넌트
+- 루트 레이아웃: [app/layout.tsx](mdc:app/layout.tsx)
+- 사이드바: [components/sidebar.tsx](mdc:components/sidebar.tsx)
+- 메인 콘텐츠: [components/main-content.tsx](mdc:components/main-content.tsx)
+
+#### 블로그 관련 컴포넌트
+- 포스트 카드: [components/blog-post-card.tsx](mdc:components/blog-post-card.tsx)
+- 포스트 상세: [app/posts/[id]/page.tsx](mdc:app/posts/[id]/page.tsx)
+
+#### shadcn/ui 컴포넌트
+- UI 컴포넌트 설정: [components.json](mdc:components.json)
+- 모든 UI 컴포넌트: [components/ui/](mdc:components/ui)
+
+## 개발 원칙
+
+### 1. 컴포넌트 타입 정의
+```typescript
+interface ComponentProps {
+  // 명확한 타입 정의
+  title: string
+  date: string
+  category: string
+  excerpt: string
+}
+```
+
+### 2. Props 패턴
+- 구조분해할당 사용
+- 기본값 설정
+- optional props는 `?` 사용
+
+### 3. 스타일링 규칙
+- TailwindCSS 클래스 사용
+- 다크 테마 우선 (zinc 팔레트)
+- 반응형 디자인 적용 (`md:`, `lg:` 등)
+
+### 4. 접근성 (Accessibility)
+- Radix UI 컴포넌트 활용
+- 시맨틱 HTML 사용
+- ARIA 속성 추가
+- 키보드 네비게이션 지원
+
+### 5. 상태 관리
+- 로컬 상태: `useState` 사용
+- 서버 상태: Next.js 서버 컴포넌트 활용
+- 복잡한 상태: `useReducer` 고려
+
+## 컴포넌트 패턴
+
+### 1. 서버 컴포넌트 우선
+```typescript
+// 기본적으로 서버 컴포넌트로 작성
+export default function ServerComponent() {
+  return <div>서버에서 렌더링</div>
+}
+```
+
+### 2. 클라이언트 컴포넌트
+```typescript
+"use client"
+// 상호작용이 필요한 경우에만 사용
+export default function ClientComponent() {
+  return <div>클라이언트에서 렌더링</div>
+}
+```
+
+### 3. 재사용 가능한 컴포넌트
+- 단일 책임 원칙 준수
+- Props 인터페이스 명확히 정의
+- 확장 가능한 구조
+
+## UI 컴포넌트 사용법
+
+### shadcn/ui 컴포넌트 활용
+```typescript
+import { Button } from "@/components/ui/button"
+import { Card } from "@/components/ui/card"
+import { Input } from "@/components/ui/input"
+```
+
+### 커스텀 스타일링
+```typescript
+import { cn } from "@/lib/utils"
+
+className={cn(
+  "기본 클래스",
+  condition && "조건부 클래스",
+  customClassName
+)}
+```
+
+## 성능 최적화
+
+### 1. 이미지 최적화
+```typescript
+import Image from "next/image"
+
+<Image
+  src="/placeholder.jpg"
+  alt="설명"
+  width={400}
+  height={300}
+  className="rounded-lg"
+/>
+```
+
+### 2. 동적 임포트
+```typescript
+import dynamic from "next/dynamic"
+
+const DynamicComponent = dynamic(() => import("./Component"), {
+  loading: () => <p>로딩중...</p>
+})
+```
+
+### 3. 메모이제이션
+```typescript
+import { memo } from "react"
+
+export const MemoizedComponent = memo(Component)
+```
+
+
+

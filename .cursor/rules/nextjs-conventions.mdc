@@ -1,0 +1,186 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# Next.js 개발 규칙
+
+## Next.js 설정
+
+### 핵심 설정 파일
+- Next.js 설정: [next.config.ts](mdc:next.config.ts)
+- TypeScript 설정: [tsconfig.json](mdc:tsconfig.json)
+- 패키지 관리: [package.json](mdc:package.json)
+
+## App Router 아키텍처
+
+### 1. 라우팅 구조
+```
+app/
+├── layout.tsx          # 루트 레이아웃
+├── page.tsx            # 홈페이지
+├── globals.css         # 글로벌 스타일
+├── posts/
+│   └── [id]/
+│       ├── page.tsx    # 동적 라우트
+│       └── actions.ts  # 서버 액션
+```
+
+### 2. 특수 파일들
+- `layout.tsx`: 레이아웃 컴포넌트
+- `page.tsx`: 페이지 컴포넌트
+- `loading.tsx`: 로딩 UI
+- `error.tsx`: 에러 UI
+- `not-found.tsx`: 404 페이지
+
+## 서버/클라이언트 컴포넌트
+
+### 1. 서버 컴포넌트 (기본)
+```typescript
+// 기본적으로 서버 컴포넌트
+export default function ServerComponent() {
+  // 서버에서 실행되는 코드
+  return <div>서버 컴포넌트</div>
+}
+```
+
+### 2. 클라이언트 컴포넌트
+```typescript
+"use client"
+// 상호작용이 필요한 경우만 사용
+export default function ClientComponent() {
+  // 브라우저에서 실행되는 코드
+  return <div>클라이언트 컴포넌트</div>
+}
+```
+
+### 3. 사용 기준
+- **서버 컴포넌트**: 데이터 페칭, SEO, 초기 로딩 성능
+- **클라이언트 컴포넌트**: 이벤트 핸들러, 상태 관리, 브라우저 API
+
+## 서버 액션
+
+### 1. 서버 액션 정의
+```typescript
+// app/posts/[id]/actions.ts
+"use server"
+
+export async function incrementPostView(postId: string) {
+  // 서버에서 실행되는 액션
+  await simulateDbUpdate(postId)
+  return { success: true }
+}
+```
+
+### 2. 서버 액션 사용
+```typescript
+import { incrementPostView } from "./actions"
+
+// 클라이언트 컴포넌트에서 호출
+await incrementPostView(postId)
+```
+
+## 데이터 페칭
+
+### 1. 서버 컴포넌트에서 데이터 페칭
+```typescript
+async function getData() {
+  const res = await fetch('https://api.example.com/data')
+  return res.json()
+}
+
+export default async function Page() {
+  const data = await getData()
+  return <div>{data.title}</div>
+}
+```
+
+### 2. 동적 라우트 파라미터
+```typescript
+// app/posts/[id]/page.tsx
+export default function PostPage({ 
+  params 
+}: { 
+  params: { id: string } 
+}) {
+  const postId = params.id
+  return <div>Post ID: {postId}</div>
+}
+```
+
+### 3. 검색 파라미터
+```typescript
+export default function SearchPage({
+  searchParams
+}: {
+  searchParams: { query?: string }
+}) {
+  const query = searchParams.query
+  return <div>검색어: {query}</div>
+}
+```
+
+## 메타데이터 및 SEO
+
+### 1. 정적 메타데이터
+```typescript
+// app/layout.tsx
+export const metadata: Metadata = {
+  title: 'v0 App',
+  description: 'Created with v0',
+  generator: 'v0.dev',
+}
+```
+
+### 2. 동적 메타데이터
+```typescript
+export async function generateMetadata({ 
+  params 
+}: { 
+  params: { id: string } 
+}): Promise<Metadata> {
+  const post = await getPost(params.id)
+  
+  return {
+    title: post.title,
+    description: post.excerpt,
+  }
+}
+```
+
+## 성능 최적화
+
+### 1. 동적 임포트
+```typescript
+import dynamic from "next/dynamic"
+
+const DynamicComponent = dynamic(() => import("./Component"), {
+  loading: () => <p>로딩중...</p>,
+  ssr: false // 클라이언트에서만 렌더링
+})
+```
+
+### 2. 이미지 최적화
+```typescript
+import Image from "next/image"
+
+<Image
+  src="/placeholder.jpg"
+  alt="설명"
+  width={400}
+  height={300}
+  priority // 중요한 이미지
+/>
+```
+
+### 3. 캐싱 전략
+```typescript
+// fetch에 캐시 옵션
+const data = await fetch(url, {
+  cache: 'force-cache', // 정적 캐시
+  next: { revalidate: 3600 } // 1시간마다 재검증
+})
+```
+
+
+

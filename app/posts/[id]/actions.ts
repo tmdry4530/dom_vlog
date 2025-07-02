@@ -1,13 +1,13 @@
-"use server"
+"use server";
 
-import { simulateDbUpdate } from "@/lib/db"
+import { incrementPostView } from "@/lib/db";
 
-export async function incrementPostView(postId: string) {
+export async function incrementViewAction(postId: string) {
   try {
-    await simulateDbUpdate(postId)
-    return { success: true, message: "View count incremented successfully." }
+    const success = await incrementPostView(postId);
+    return { success };
   } catch (error) {
-    console.error("Error incrementing view count:", error)
-    return { success: false, message: "Failed to increment view count." }
+    console.error("Error incrementing view count:", error);
+    return { success: false, error: "Failed to increment view count" };
   }
 }

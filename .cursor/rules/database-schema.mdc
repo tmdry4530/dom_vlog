@@ -1,0 +1,187 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# 데이터베이스 스키마 가이드
+
+## 데이터베이스 구조
+
+### 마이그레이션 파일들
+1. 기본 블로그 테이블: [scripts/001_create_blog_tables.sql](mdc:scripts/001_create_blog_tables.sql)
+2. 댓글 시스템: [scripts/002_add_comments_table.sql](mdc:scripts/002_add_comments_table.sql)
+3. 공지사항: [scripts/003_add_announcements_table.sql](mdc:scripts/003_add_announcements_table.sql)
+4. 외부 링크: [scripts/004_add_external_links_table.sql](mdc:scripts/004_add_external_links_table.sql)
+5. 포스트 메타데이터: [scripts/005_add_post_metadata_and_views.sql](mdc:scripts/005_add_post_metadata_and_views.sql)
+
+### 데이터베이스 연결
+- 현재 시뮬레이션: [lib/db.ts](mdc:lib/db.ts)
+
+## 핵심 테이블 스키마
+
+### 1. Users 테이블
+```sql
+users (
+    id UUID PRIMARY KEY,
+    username VARCHAR(50) UNIQUE NOT NULL,
+    email VARCHAR(255) UNIQUE NOT NULL,
+    password_hash VARCHAR(255) NOT NULL,
+    created_at TIMESTAMP WITH TIME ZONE,
+    updated_at TIMESTAMP WITH TIME ZONE
+)
+```
+
+### 2. Categories 테이블
+```sql
+categories (
+    id UUID PRIMARY KEY,
+    name VARCHAR(100) UNIQUE NOT NULL,
+    slug VARCHAR(100) UNIQUE NOT NULL,
+    created_at TIMESTAMP WITH TIME ZONE,
+    updated_at TIMESTAMP WITH TIME ZONE
+)
+```
+
+### 3. Posts 테이블
+```sql
+posts (
+    id UUID PRIMARY KEY,
+    user_id UUID NOT NULL,
+    category_id UUID,
+    title VARCHAR(255) NOT NULL,
+    slug VARCHAR(255) UNIQUE NOT NULL,
+    content TEXT NOT NULL,
+    excerpt TEXT,
+    published BOOLEAN DEFAULT FALSE,
+    published_at TIMESTAMP WITH TIME ZONE,
+    created_at TIMESTAMP WITH TIME ZONE,
+    updated_at TIMESTAMP WITH TIME ZONE
+)
+```
+
+### 4. Tags 테이블 및 관계
+```sql
+tags (
+    id UUID PRIMARY KEY,
+    name VARCHAR(50) UNIQUE NOT NULL,
+    slug VARCHAR(50) UNIQUE NOT NULL,
+    created_at TIMESTAMP WITH TIME ZONE,
+    updated_at TIMESTAMP WITH TIME ZONE
+)
+
+post_tags (
+    post_id UUID,
+    tag_id UUID,
+    PRIMARY KEY (post_id, tag_id)
+)
+```
+
+### 5. Comments 테이블
+```sql
+comments (
+    id UUID PRIMARY KEY,
+    post_id UUID NOT NULL,
+    user_id UUID,
+    author_name VARCHAR(100) NOT NULL,
+    author_email VARCHAR(255),
+    content TEXT NOT NULL,
+    parent_comment_id UUID,
+    approved BOOLEAN DEFAULT FALSE,
+    created_at TIMESTAMP WITH TIME ZONE,
+    updated_at TIMESTAMP WITH TIME ZONE
+)
+```
+
+## 데이터베이스 설계 원칙
+
+### 1. UUID 사용
+- 모든 테이블의 기본 키는 UUID 사용
+- `uuid_generate_v4()` 함수 활용
+- 보안성과 확장성 고려
+
+### 2. 외래 키 제약
+- `ON DELETE CASCADE`: 연관 데이터 자동 삭제
+- `ON DELETE SET NULL`: 참조 무효화
+- 데이터 무결성 보장
+
+### 3. 인덱스 전략
+```sql
+-- 자주 조회되는 컬럼에 인덱스 생성
+CREATE INDEX idx_posts_user_id ON posts(user_id);
+CREATE INDEX idx_posts_category_id ON posts(category_id);
+CREATE INDEX idx_posts_published_at ON posts(published_at);
+```
+
+### 4. 타임스탬프 관리
+- `created_at`: 생성 시간 (DEFAULT CURRENT_TIMESTAMP)
+- `updated_at`: 수정 시간 (트리거로 자동 업데이트)
+
+## 쿼리 패턴
+
+### 1. 포스트 조회
+```sql
+-- 발행된 포스트만 조회 (최신순)
+SELECT p.*, c.name as category_name 
+FROM posts p 
+LEFT JOIN categories c ON p.category_id = c.id 
+WHERE p.published = true 
+ORDER BY p.published_at DESC;
+```
+
+### 2. 카테고리별 포스트 수
+```sql
+-- 카테고리별 포스트 개수
+SELECT c.name, COUNT(p.id) as post_count 
+FROM categories c 
+LEFT JOIN posts p ON c.id = p.category_id AND p.published = true 
+GROUP BY c.id, c.name;
+```
+
+### 3. 태그별 포스트
+```sql
+-- 특정 태그의 포스트 조회
+SELECT p.* 
+FROM posts p 
+JOIN post_tags pt ON p.id = pt.post_id 
+JOIN tags t ON pt.tag_id = t.id 
+WHERE t.slug = 'tag-slug' AND p.published = true;
+```
+
+### 4. 중첩 댓글 조회
+```sql
+-- 계층적 댓글 구조 조회
+WITH RECURSIVE comment_tree AS (
+    -- 최상위 댓글
+    SELECT *, 0 as level 
+    FROM comments 
+    WHERE post_id = $1 AND parent_comment_id IS NULL
+    
+    UNION ALL
+    
+    -- 하위 댓글
+    SELECT c.*, ct.level + 1 
+    FROM comments c 
+    JOIN comment_tree ct ON c.parent_comment_id = ct.id
+)
+SELECT * FROM comment_tree ORDER BY level, created_at;
+```
+
+## 성능 최적화
+
+### 1. 쿼리 최적화
+- N+1 문제 방지 (JOIN 사용)
+- 필요한 컬럼만 SELECT
+- LIMIT과 OFFSET 적절히 사용
+
+### 2. 인덱스 활용
+- WHERE 절에 자주 사용되는 컬럼
+- ORDER BY에 사용되는 컬럼
+- JOIN 조건에 사용되는 컬럼
+
+### 3. 캐싱 전략
+- 자주 조회되는 데이터 캐시
+- 카테고리, 태그 등 메타데이터 캐시
+- Redis 활용 고려
+
+
+

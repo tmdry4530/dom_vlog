@@ -1,0 +1,97 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+# 프로젝트 구조 가이드
+
+## 개요
+"참돔이의 일기장" 블로그 플랫폼 - Next.js 15 기반 모던 웹 애플리케이션
+
+## 핵심 설정 파일
+
+### 패키지 관리
+- 메인 의존성 관리: [package.json](mdc:package.json)
+- PNPM 락 파일: [pnpm-lock.yaml](mdc:pnpm-lock.yaml)
+
+### 프레임워크 설정
+- Next.js 설정: [next.config.ts](mdc:next.config.ts)
+- TypeScript 설정: [tsconfig.json](mdc:tsconfig.json)
+- TailwindCSS 설정: [tailwind.config.ts](mdc:tailwind.config.ts)
+- PostCSS 설정: [postcss.config.mjs](mdc:postcss.config.mjs)
+
+## 디렉토리 구조
+
+### App Router (Next.js 13+)
+```
+app/
+├── layout.tsx      # 루트 레이아웃
+├── page.tsx        # 메인 페이지
+├── globals.css     # 글로벌 스타일
+└── posts/[id]/     # 동적 라우팅
+    ├── page.tsx    # 포스트 상세 페이지
+    └── actions.ts  # 서버 액션
+```
+
+### 컴포넌트 구조
+```
+components/
+├── ui/             # shadcn/ui 재사용 컴포넌트
+├── sidebar.tsx     # 사이드바 컴포넌트
+├── main-content.tsx # 메인 콘텐츠
+└── blog-post-card.tsx # 블로그 포스트 카드
+```
+
+### 유틸리티 및 훅
+```
+lib/
+├── db.ts          # 데이터베이스 연결 (현재 시뮬레이션)
+└── utils.ts       # 공통 유틸리티 함수
+
+hooks/
+├── use-mobile.tsx  # 모바일 감지 훅
+└── use-toast.ts   # 토스트 알림 훅
+```
+
+### 정적 리소스
+```
+public/
+├── placeholder-logo.png    # 로고 이미지
+├── placeholder-logo.svg    # 로고 SVG
+├── placeholder-user.jpg    # 기본 사용자 이미지
+└── placeholder.jpg/svg     # 플레이스홀더 이미지
+```
+
+### 데이터베이스 마이그레이션
+```
+scripts/
+├── 001_create_blog_tables.sql      # 기본 블로그 테이블
+├── 002_add_comments_table.sql      # 댓글 테이블
+├── 003_add_announcements_table.sql # 공지사항 테이블
+├── 004_add_external_links_table.sql # 외부 링크 테이블
+└── 005_add_post_metadata_and_views.sql # 포스트 메타데이터
+```
+
+## 개발 규칙
+
+### 파일 명명 규칙
+- 컴포넌트: kebab-case (blog-post-card.tsx)
+- 페이지: page.tsx (App Router 규칙)
+- 액션: actions.ts
+- 훅: use-{name}.tsx
+- 유틸리티: utils.ts
+
+### 디렉토리 구조 원칙
+1. App Router 패턴 준수
+2. 컴포넌트는 기능별로 분리
+3. UI 컴포넌트는 별도 디렉토리
+4. 비즈니스 로직은 lib 디렉토리
+5. 정적 리소스는 public 디렉토리
+
+### 가져오기 규칙
+- 절대 경로 사용: `@/components/...`
+- UI 컴포넌트: `@/components/ui/...`
+- 유틸리티: `@/lib/...`
+- 훅: `@/hooks/...`
+
+

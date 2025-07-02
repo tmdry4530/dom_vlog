@@ -1,0 +1,172 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# 스타일링 및 UI/UX 가이드
+
+## 스타일 시스템
+
+### 핵심 스타일 파일
+- 글로벌 스타일: [app/globals.css](mdc:app/globals.css)
+- TailwindCSS 설정: [tailwind.config.ts](mdc:tailwind.config.ts)
+- 유틸리티 함수: [lib/utils.ts](mdc:lib/utils.ts)
+
+### shadcn/ui 시스템
+- 컴포넌트 설정: [components.json](mdc:components.json)
+- UI 컴포넌트 라이브러리: [components/ui/](mdc:components/ui)
+
+## 디자인 토큰
+
+### 1. 컬러 시스템
+```css
+/* 다크 테마 중심 */
+--background: 0 0% 3.9%;          /* 배경색 */
+--foreground: 0 0% 98%;           /* 텍스트색 */
+--card: 0 0% 3.9%;                /* 카드 배경 */
+--primary: 0 0% 98%;              /* 기본 색상 */
+--secondary: 0 0% 14.9%;          /* 보조 색상 */
+--muted: 0 0% 14.9%;              /* 음소거 색상 */
+--accent: 0 0% 14.9%;             /* 강조 색상 */
+--destructive: 0 62.8% 30.6%;     /* 위험 색상 */
+```
+
+### 2. Zinc 팔레트 활용
+```css
+/* 주로 사용되는 Zinc 색상 */
+.bg-zinc-900    /* 메인 배경 */
+.bg-zinc-800    /* 사이드바 배경 */
+.bg-zinc-700    /* 인풋, 버튼 배경 */
+.text-zinc-50   /* 기본 텍스트 */
+.text-zinc-400  /* 보조 텍스트 */
+.text-zinc-500  /* 플레이스홀더 */
+```
+
+### 3. 타이포그래피
+```css
+/* 폰트 시스템 */
+font-family: Arial, Helvetica, sans-serif;
+
+/* 텍스트 크기 */
+.text-3xl    /* 페이지 제목 */
+.text-2xl    /* 섹션 제목 */
+.text-xl     /* 포스트 제목 */
+.text-sm     /* 메타 정보 */
+.text-xs     /* 작은 정보 */
+```
+
+## 레이아웃 시스템
+
+### 1. 메인 레이아웃
+```typescript
+// 사이드바 + 메인 콘텐츠 구조
+<div className="flex min-h-screen bg-zinc-900 text-zinc-50">
+  <Sidebar />
+  <MainContent />
+</div>
+```
+
+### 2. 반응형 디자인
+```css
+/* 모바일 우선 접근법 */
+.hidden           /* 기본 숨김 */
+.md:block         /* 중간 화면에서 표시 */
+.lg:grid-cols-3   /* 큰 화면에서 3열 */
+
+/* 사이드바 반응형 */
+.w-64             /* 데스크톱 너비 */
+.hidden md:block  /* 모바일에서 숨김 */
+```
+
+### 3. 그리드 시스템
+```css
+/* 통계 정보 레이아웃 */
+.grid.grid-cols-3.gap-2
+
+/* 카드 레이아웃 */
+.space-y-8        /* 세로 간격 */
+.max-w-4xl.mx-auto /* 최대 너비와 중앙 정렬 */
+```
+
+## 컴포넌트 스타일링
+
+### 1. 카드 컴포넌트
+```css
+/* 블로그 포스트 카드 */
+.p-6.rounded-lg.hover:bg-zinc-800.transition-colors.duration-200
+```
+
+### 2. 버튼 스타일
+```css
+/* 기본 버튼 */
+.bg-zinc-700.text-zinc-50.hover:bg-zinc-600
+
+/* 아이콘 버튼 */
+.rounded-full.w-12.h-12.shadow-lg
+```
+
+### 3. 입력 필드
+```css
+/* 검색 입력 */
+.bg-zinc-700.border-zinc-600.text-zinc-50.placeholder:text-zinc-400
+```
+
+## 스타일링 컨벤션
+
+### 1. 클래스 네이밍
+```typescript
+// cn 유틸리티 함수 사용
+import { cn } from "@/lib/utils"
+
+className={cn(
+  "기본 스타일",
+  condition && "조건부 스타일",
+  props.className // 외부에서 전달된 스타일
+)}
+```
+
+### 2. 조건부 스타일링
+```typescript
+// 상태에 따른 스타일 변경
+className={cn(
+  "base-class",
+  isActive && "active-class",
+  isDisabled && "disabled-class"
+)}
+```
+
+### 3. 반응형 클래스 순서
+```css
+/* 모바일 → 태블릿 → 데스크톱 순서 */
+.text-sm.md:text-base.lg:text-lg
+```
+
+## 애니메이션 및 전환
+
+### 1. 호버 효과
+```css
+/* 부드러운 전환 */
+.transition-colors.duration-200
+.hover:bg-zinc-800
+.hover:text-zinc-50
+```
+
+### 2. 커스텀 애니메이션
+```css
+/* 아코디언 애니메이션 */
+@keyframes accordion-down {
+  from { height: 0 }
+  to { height: var(--radix-accordion-content-height) }
+}
+```
+
+### 3. 스크롤 효과
+```css
+/* 스크롤바 숨김 */
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+```
+
+
+

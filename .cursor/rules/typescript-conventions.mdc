@@ -1,0 +1,149 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# TypeScript 개발 규칙
+
+## TypeScript 설정
+
+### 핵심 설정 파일
+- TypeScript 설정: [tsconfig.json](mdc:tsconfig.json)
+- 타입 정의: [next-env.d.ts](mdc:next-env.d.ts)
+
+## 타입 정의 규칙
+
+### 1. 컴포넌트 Props
+```typescript
+interface BlogPostCardProps {
+  title: string
+  date: string
+  category: string
+  excerpt: string
+}
+
+export function BlogPostCard({ title, date, category, excerpt }: BlogPostCardProps) {
+  return <div>{title}</div>
+}
+```
+
+### 2. 함수 타입
+```typescript
+// 명시적 반환 타입
+async function simulateDbUpdate(postId: string): Promise<void> {
+  await new Promise((resolve) => setTimeout(resolve, 100))
+}
+
+// 제네릭 사용
+function createResponse<T>(data: T): { success: boolean; data: T } {
+  return { success: true, data }
+}
+```
+
+### 3. 객체 타입
+```typescript
+// 인터페이스 정의
+interface Post {
+  id: string
+  title: string
+  content: string
+  publishedAt: Date
+  author: User
+}
+
+// 타입 별칭
+type PostStatus = 'draft' | 'published' | 'archived'
+```
+
+## 컴포넌트 타입 패턴
+
+### 1. React 컴포넌트 타입
+```typescript
+import { ReactNode } from 'react'
+
+interface LayoutProps {
+  children: ReactNode
+}
+
+export default function RootLayout({ children }: LayoutProps) {
+  return <html><body>{children}</body></html>
+}
+```
+
+### 2. 이벤트 핸들러 타입
+```typescript
+import { ChangeEvent, FormEvent } from 'react'
+
+const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
+  console.log(e.target.value)
+}
+
+const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+  e.preventDefault()
+}
+```
+
+## 유틸리티 타입 활용
+
+### 1. 내장 유틸리티 타입
+```typescript
+// Partial - 모든 속성을 선택적으로
+type PartialPost = Partial<Post>
+
+// Pick - 특정 속성만 선택
+type PostPreview = Pick<Post, 'id' | 'title' | 'excerpt'>
+
+// Omit - 특정 속성 제외
+type CreatePostData = Omit<Post, 'id' | 'publishedAt'>
+```
+
+### 2. 커스텀 유틸리티 타입
+```typescript
+// API 응답 타입
+type ApiResponse<T> = {
+  success: boolean
+  data?: T
+  error?: string
+}
+```
+
+## 타입 안전성 강화
+
+### 1. Strict 모드 활용
+```json
+// tsconfig.json
+{
+  "compilerOptions": {
+    "strict": true,
+    "noImplicitAny": true,
+    "strictNullChecks": true
+  }
+}
+```
+
+### 2. 타입 가드
+```typescript
+function isString(value: unknown): value is string {
+  return typeof value === 'string'
+}
+
+if (isString(data)) {
+  // data는 여기서 string 타입
+  console.log(data.toLowerCase())
+}
+```
+
+## 네이밍 컨벤션
+
+### 1. 타입 네이밍
+- **인터페이스**: PascalCase (UserProfile)
+- **타입 별칭**: PascalCase (PostStatus)
+- **제네릭**: 단일 대문자 (T, K, V)
+
+### 2. 파일 네이밍
+- **컴포넌트**: kebab-case.tsx
+- **타입 정의**: types.ts
+- **유틸리티**: utils.ts
+
+
+

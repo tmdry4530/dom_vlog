@@ -4,8 +4,17 @@ import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
 import { Search, ArrowRight, ChevronRight, LinkIcon } from "lucide-react"
+import { CategoryWithStats } from "@/types/database"
+import { BlogPostSummary } from "@/lib/db"
 
-export function Sidebar() {
+interface SidebarProps {
+  categories: CategoryWithStats[];
+  popularPosts: Partial<BlogPostSummary>[];
+}
+
+export function Sidebar({ categories, popularPosts }: SidebarProps) {
+  const totalPosts = categories.reduce((acc, category) => acc + (category.postCount || 0), 0);
+
   return (
     <aside className="w-64 flex-shrink-0 border-r border-zinc-800 bg-zinc-800 p-6 hidden md:block">
       <div className="h-[calc(100vh-48px)] overflow-y-auto scrollbar-hide pr-4">
@@ -27,7 +36,7 @@ export function Sidebar() {
 
         <div className="grid grid-cols-3 gap-2 text-center text-zinc-400 text-sm mb-8">
           <div>
-            <div className="text-lg font-bold text-zinc-50">385</div>
+            <div className="text-lg font-bold text-zinc-50">{totalPosts}</div>
             <div>전체</div>
           </div>
           <div>
@@ -56,21 +65,13 @@ export function Sidebar() {
         </div>
 
         <div className="mb-8">
-          <h3 className="text-sm font-semibold text-zinc-400 mb-3">분류 전체보기 (42)</h3>
+          <h3 className="text-sm font-semibold text-zinc-400 mb-3">분류 전체보기 ({totalPosts})</h3>
           <nav className="space-y-2 text-zinc-400">
-            <Link href="#" className="flex items-center justify-between text-sm hover:text-zinc-50">
-              Computer Science (37)
-            </Link>
-            <Link href="#" className="flex items-center justify-between text-sm hover:text-zinc-50">
-              Frontend (0)
-            </Link>
-            <Link href="#" className="flex items-center justify-between text-sm hover:text-zinc-50">
-              Backend (0)
-            </Link>
-            <Link href="#" className="flex items-center justify-between text-sm hover:text-zinc-50">
-              Blockchain (4)
-              <ChevronRight className="h-4 w-4" />
-            </Link>
+            {categories.map((category) => (
+              <Link href={`/category/${category.slug}`} key={category.id} className="flex items-center justify-between text-sm hover:text-zinc-50">
+                {category.name} ({category.postCount})
+              </Link>
+            ))}
           </nav>
         </div>
 
@@ -120,22 +121,12 @@ export function Sidebar() {
         <div className="mb-8">
           <h3 className="text-sm font-semibold text-zinc-400 mb-3">인기 글</h3>
           <nav className="space-y-2 text-zinc-400">
-            <Link href="#" className="block text-sm hover:text-zinc-50">
-              <div className="text-zinc-50">database - mysql</div>
-              <div className="text-xs text-zinc-500">2023.09.19</div>
+            {popularPosts.map((post) => (
+            <Link href={`/posts/${post.slug}`} key={post.id} className="block text-sm hover:text-zinc-50">
+              <div className="text-zinc-50">{post.title}</div>
+              <div className="text-xs text-zinc-500">{new Date(post.published_at!).toLocaleDateString()}</div>
             </Link>
-            <Link href="#" className="block text-sm hover:text-zinc-50">
-              <div className="text-zinc-50">Mysql</div>
-              <div className="text-xs text-zinc-500">2023.09.19</div>
-            </Link>
-            <Link href="#" className="block text-sm hover:text-zinc-50">
-              <div className="text-zinc-50">조건문/반복문</div>
-              <div className="text-xs text-zinc-500">2023.09.04</div>
-            </Link>
-            <Link href="#" className="block text-sm hover:text-zinc-50">
-              <div className="text-zinc-50">연산자</div>
-              <div className="text-xs text-zinc-500">2023.09.04</div>
-            </Link>
+            ))}
           </nav>
         </div>
 
