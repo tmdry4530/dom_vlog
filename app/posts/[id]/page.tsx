@@ -1,12 +1,13 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useEffect, useState, use } from "react";
 import { incrementPostView } from "@/app/posts/[id]/actions"
 import { simulateDbFetch } from "@/lib/db"
 
 // This would typically be a Server Component fetching data
 // For demonstration, we'll simulate client-side fetching and incrementing
-export default function PostDetailPage({ params }: { params: { id: string } }) {
+export default function PostDetailPage(props: { params: Promise<{ id: string }> }) {
+  const params = use(props.params);
   const postId = params.id
   const [viewCount, setViewCount] = useState<number | null>(null)
   const [postContent, setPostContent] = useState<any>(null) // Simulate post content
