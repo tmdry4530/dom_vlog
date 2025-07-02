@@ -9,12 +9,11 @@ export async function POST(request: Request) {
   const cookieStore = await cookies();
   const user = await getUserByUsername(username, cookieStore);
 
-
   if (!user || !user.email) {
     return NextResponse.json({ message: 'Invalid username or password' }, { status: 401 });
   }
 
-  const supabase = await createClient();
+  const supabase = createClient(cookieStore);
   
   const { error } = await supabase.auth.signInWithPassword({
     email: user.email,

@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 
 export async function POST(request: Request) {
-  const supabase = await createClient();
+  const supabase = createClient();
   const { username, password } = await request.json();
 
   const { data, error } = await supabase
