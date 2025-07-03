@@ -5,7 +5,14 @@ export async function middleware(request: NextRequest) {
   const { supabase, response } = createClient(request)
 
   // 만료된 경우 세션을 새로고침합니다. 서버 컴포넌트에 필요합니다.
-  await supabase.auth.getSession()
+  const {
+    data: { session },
+  } = await supabase.auth.getSession()
+
+  // 보호된 경로에 대한 접근 제어
+  if (!session && request.nextUrl.pathname.startsWith('/posts/new')) {
+    return NextResponse.redirect(new URL('/login', request.url))
+  }
 
   return response
 }

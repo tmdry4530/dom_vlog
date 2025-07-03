@@ -6,8 +6,7 @@ import { getUserByUsername } from '@/lib/db';
 export async function POST(request: Request) {
   const { username, password } = await request.json();
   
-  const cookieStore = await cookies();
-  const user = await getUserByUsername(username, cookieStore);
+  const user = await getUserByUsername(username);
 
 
   if (!user || !user.email) {

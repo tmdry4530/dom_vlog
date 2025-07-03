@@ -35,10 +35,11 @@ export function MainContent({ posts }: MainContentProps) {
               <BlogPostCard
                 title={post.title}
                 date={new Date(
-                  post.publishedAt || post.createdAt
+                  post.published_at || post.created_at
                 ).toLocaleDateString("ko-KR")}
                 category={post.categories?.[0]?.category?.name || "미분류"}
                 excerpt={post.excerpt || post.content.substring(0, 200) + "..."}
+                slug={post.slug}
               />
               {/* 마지막 글이 아닌 경우에만 구분선 추가 */}
               {index < posts.length - 1 && (

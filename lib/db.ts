@@ -1,6 +1,5 @@
 import { createClient } from "./supabase/server";
 import { unstable_noStore as noStore } from 'next/cache';
-import { cookies } from "next/headers";
 import {
   BlogPost,
   Category,
@@ -31,7 +30,9 @@ export interface BlogPostSummary {
 function createSlug(text: string): string {
   return text
     .toLowerCase()
-    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/\s+/g, '-') // 공백을 하이픈으로
+    .replace(/[^\uAC00-\uD7A3\u3131-\u314E\u314F-\u3163a-z0-9-]/g, '') // 한글, 영문, 숫자, 하이픈 외 모두 제거
+    .replace(/--+/g, '-') // 중복 하이픈 제거
     .replace(/(^-|-$)/g, "");
 }
 
@@ -252,10 +253,10 @@ export async function createPost(postData: {
   title: string;
   content: string;
   excerpt?: string;
-  authorId: string;
+  author_id: string;
   categoryIds?: string[];
   status?: PostStatus;
-  featuredImage?: string;
+  featured_image_url?: string;
 }): Promise<BlogPost | null> {
   noStore();
   const supabase = await createClient();
@@ -269,17 +270,17 @@ export async function createPost(postData: {
       slug,
       content: postData.content,
       excerpt: postData.excerpt,
-      authorId: postData.authorId,
+      author_id: postData.author_id,
       status: postData.status || "DRAFT",
-      featuredImage: postData.featuredImage,
-      publishedAt:
+      featured_image_url: postData.featuredImage,
+      published_at:
         postData.status === "PUBLISHED" ? new Date().toISOString() : undefined,
     })
     .select()
     .single();
 
   if (error) {
-    console.error("Error creating post:", error);
+    console.error("Error creating post:", error); // Log the actual error
     return null;
   }
 
@@ -386,7 +387,7 @@ export async function updatePost(
       await supabase.from("ai_suggested_tags").delete().eq("post_id", post.id);
       await supabase.from("ai_suggested_categories").delete().eq("post_id", post.id);
 
-      // ai_suggested_tags에 추천 태그 저장
+      // ai_suggested_tags에 추�� 태그 저장
       await supabase.from("ai_suggested_tags").insert(
         aiAnalysis.suggestedTags.map((tag) => ({
           post_id: post.id,
@@ -431,7 +432,7 @@ export async function incrementPostView(postId: string): Promise<boolean> {
   // 현재 조회수 가져오기
   const { data: post, error: fetchError } = await supabase
     .from("posts")
-    .select("viewCount")
+    .select("view_count")
     .eq("id", postId)
     .single();
 
@@ -443,7 +444,7 @@ export async function incrementPostView(postId: string): Promise<boolean> {
   // 조회수 증가
   const { error: updateError } = await supabase
     .from("posts")
-    .update({ viewCount: (post.viewCount || 0) + 1 })
+    .update({ view_count: (post.view_count || 0) + 1 })
     .eq("id", postId);
 
   if (updateError) {
@@ -792,26 +793,4 @@ export async function searchPosts(query: string): Promise<PostWithDetails[]> {
 }
 
 
-// AI 관련 함수들
-import { generateObject } from 'ai';
-import { openai } from '@ai-sdk/openai';
-import { z } from 'zod';
-
-async function analyzePostContent(title: string, content: string, categories: Category[]) {
-  try {
-    const { object: analysis } = await generateObject({
-      model: openai('gpt-4-turbo'),
-      schema: z.object({
-        summary: z.string().describe('콘텐츠를 3-4 문장으로 요약'),
-        suggestedTags: z.array(z.string()).describe('콘텐츠와 관련된 태그 5개 제안'),
-        suggestedCategory: z.enum(categories.map(c => c.name) as [string, ...string[]]).describe('가장 적합한 카테고리 제안'),
-        writingStyle: z.string().describe('글쓰기 스타일 분석 (예: 분석적, 설득적, 정보 제공)'),
-      }),
-      prompt: `다음 블로그 게시물의 제목과 내용을 분석해주세요:\n\n제목: ${title}\n\n내용: ${content}`,
-    });
-    return analysis;
-  } catch (error) {
-    console.error("Error analyzing post content:", error);
-    return null;
-  }
-}
+import { analyzePostContent } from './ai';

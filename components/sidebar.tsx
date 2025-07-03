@@ -3,16 +3,18 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
-import { Search, ArrowRight, ChevronRight, LinkIcon } from "lucide-react"
+import { Search, ArrowRight, ChevronRight, LinkIcon, Pencil } from "lucide-react"
 import { CategoryWithStats } from "@/types/database"
 import { BlogPostSummary } from "@/lib/db"
+import { User } from "@supabase/supabase-js"
 
 interface SidebarProps {
   categories: CategoryWithStats[];
   popularPosts: Partial<BlogPostSummary>[];
+  user: User | null;
 }
 
-export function Sidebar({ categories, popularPosts }: SidebarProps) {
+export function Sidebar({ categories, popularPosts, user }: SidebarProps) {
   const totalPosts = categories.reduce((acc, category) => acc + (category.postCount || 0), 0);
 
   return (
@@ -64,6 +66,22 @@ export function Sidebar({ categories, popularPosts }: SidebarProps) {
           </Button>
         </div>
 
+        {user && (
+          <div className="mb-8 space-y-2">
+            <Link href="/posts/new" passHref>
+              <Button variant="outline" className="w-full border-zinc-600 bg-zinc-700 hover:bg-zinc-600">
+                <Pencil className="mr-2 h-4 w-4" />
+                새 글 작성
+              </Button>
+            </Link>
+            <form action="/api/auth/logout" method="post">
+              <Button variant="ghost" className="w-full justify-start text-zinc-400 hover:text-zinc-50">
+                로그아웃
+              </Button>
+            </form>
+          </div>
+        )}
+
         <div className="mb-8">
           <h3 className="text-sm font-semibold text-zinc-400 mb-3">분류 전체보기 ({totalPosts})</h3>
           <nav className="space-y-2 text-zinc-400">
@@ -80,7 +98,7 @@ export function Sidebar({ categories, popularPosts }: SidebarProps) {
         <div className="mb-8">
           <h3 className="text-sm font-semibold text-zinc-400 mb-3">블로그 메뉴</h3>
           <nav className="space-y-2 text-zinc-400">
-            <Link href="#" className="block text-sm hover:text-zinc-50">
+            <Link href="/" className="block text-sm hover:text-zinc-50">
               홈
             </Link>
             <Link href="#" className="block text-sm hover:text-zinc-50">

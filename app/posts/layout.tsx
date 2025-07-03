@@ -1,22 +1,24 @@
 import { Sidebar } from "@/components/sidebar";
-import { MainContent } from "@/components/main-content";
-import { getAllPosts, getAllCategories, getPopularPosts } from "@/lib/db";
+import { getAllCategories, getPopularPosts } from "@/lib/db";
 import { createClient } from "@/lib/supabase/server";
 
-export default async function Home() {
+export default async function PostsLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   const supabase = await createClient();
   const {
     data: { user },
   } = await supabase.auth.getUser();
 
-  const posts = await getAllPosts();
   const categories = await getAllCategories();
   const popularPosts = await getPopularPosts();
 
   return (
     <div className="flex min-h-screen bg-zinc-900 text-zinc-50">
       <Sidebar categories={categories} popularPosts={popularPosts} user={user} />
-      <MainContent posts={posts} />
+      {children}
     </div>
   );
 }

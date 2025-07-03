@@ -5,11 +5,12 @@ interface BlogPostCardProps {
   date: string
   category: string
   excerpt: string
+  slug: string
 }
 
-export function BlogPostCard({ title, date, category, excerpt }: BlogPostCardProps) {
+export function BlogPostCard({ title, date, category, excerpt, slug }: BlogPostCardProps) {
   return (
-    <Link href="#" className="block p-6 rounded-lg hover:bg-zinc-800 transition-colors duration-200">
+    <Link href={`/posts/${slug}`} className="block p-6 rounded-lg hover:bg-zinc-800 transition-colors duration-200">
       <h2 className="text-xl font-semibold text-zinc-50 mb-2">{title}</h2>
       <p className="text-sm text-zinc-400 mb-4">
         {date} · {category}
