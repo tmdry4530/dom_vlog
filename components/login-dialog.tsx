@@ -12,11 +12,10 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { toast } from "sonner";
 
 interface LoginDialogProps {
   isOpen: boolean;
-  onOpenChange: (isOpen: boolean) => void;
+  onOpenChange: (open: boolean) => void;
 }
 
 export function LoginDialog({ isOpen, onOpenChange }: LoginDialogProps) {
@@ -36,16 +35,19 @@ export function LoginDialog({ isOpen, onOpenChange }: LoginDialogProps) {
       });
 
       if (response.ok) {
-        toast.success("로그인에 성공했습니다.");
+        console.log("로그인에 성공했습니다.");
+        alert("로그인에 성공했습니다.");
         onOpenChange(false); // Close the dialog
         // You might want to redirect the user or refresh the page here
         window.location.reload();
       } else {
         const errorData = await response.json();
-        toast.error(errorData.message || "로그인에 실패했습니다.");
+        console.error("로그인 실패:", errorData.message || "로그인에 실패했습니다.");
+        alert(errorData.message || "로그인에 실패했습니다.");
       }
     } catch (error) {
-      toast.error("로그인 중 오류가 발생했습니다.");
+      console.error("로그인 중 오류가 발생했습니다.", error);
+      alert("로그인 중 오류가 발생했습니다.");
     }
   };
 

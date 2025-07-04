@@ -1,4 +1,4 @@
-import { getPostBySlug } from "@/lib/db";
+import { getPostById } from "@/lib/db";
 import { createClient } from "@/lib/supabase/server";
 import { notFound, redirect } from "next/navigation";
 import EditPostForm from "./edit-form";
@@ -6,9 +6,14 @@ import EditPostForm from "./edit-form";
 export default async function EditPostPage({
   params,
 }: {
-  params: Promise<{ slug: string }>;
+  params: Promise<{ id: string }>;
 }) {
-  const { slug } = await params;
+  const { id } = await params;
+  const postId = parseInt(id, 10);
+
+  if (isNaN(postId)) {
+    notFound();
+  }
 
   const supabase = await createClient();
   const {
@@ -19,8 +24,7 @@ export default async function EditPostPage({
     redirect("/login");
   }
 
-  const decodedSlug = decodeURIComponent(slug);
-  const post = await getPostBySlug(decodedSlug);
+  const post = await getPostById(postId);
 
   if (!post) {
     notFound();

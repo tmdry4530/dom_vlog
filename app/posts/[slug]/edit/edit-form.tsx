@@ -9,7 +9,7 @@ import { PostWithDetails } from "@/types/database";
 
 const initialState = {
   message: "",
-  slug: undefined,
+  postId: undefined,
 };
 
 export default function EditPostForm({ post }: { post: PostWithDetails }) {
@@ -17,8 +17,8 @@ export default function EditPostForm({ post }: { post: PostWithDetails }) {
   const [state, formAction] = useActionState(updatePostAction, initialState);
 
   useEffect(() => {
-    if (state.message === "성공" && state.slug) {
-      window.location.href = `/posts/${state.slug}`;
+    if (state.message === "성공" && state.postId) {
+      window.location.href = `/posts/${state.postId}`;
     }
   }, [state]);
 
@@ -39,6 +39,18 @@ export default function EditPostForm({ post }: { post: PostWithDetails }) {
               className="bg-zinc-800 border-zinc-700"
               defaultValue={post.title}
               required
+            />
+          </div>
+          <div>
+            <label htmlFor="tags" className="block text-sm font-medium mb-2">
+              태그 (쉼표로 구분)
+            </label>
+            <Input
+              id="tags"
+              name="tags"
+              placeholder="예: Next.js, Supabase, Tailwind"
+              className="bg-zinc-800 border-zinc-700"
+              defaultValue={post.tags?.map(t => t.tags?.name).filter(Boolean).join(", ") || ""}
             />
           </div>
           <div>

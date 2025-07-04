@@ -4,21 +4,30 @@ import { updatePost } from "@/lib/db";
 import { revalidatePath } from "next/cache";
 
 export async function updatePostAction(
-  prevState: { message: string; slug?: string },
+  prevState: { message: string; postId?: number },
   formData: FormData
 ) {
-  const postId = formData.get("postId") as string;
+  const postIdStr = formData.get("postId") as string;
   const title = formData.get("title") as string;
   const content = formData.get("content") as string;
+  const tags = formData.get("tags") as string;
 
-  if (!postId || !title || !content) {
+  if (!postIdStr || !title || !content) {
     return { message: "필수 필드가 누락되었습니다." };
   }
+
+  const postId = parseInt(postIdStr, 10);
+  if (isNaN(postId)) {
+    return { message: "유효하지 않은 포스트 ID입니다." };
+  }
+
+  const tagNames = tags ? tags.split(",").map(tag => tag.trim()).filter(Boolean) : [];
 
   // In a real app, you'd add authorization here to ensure the user can edit this post.
   const updatedPost = await updatePost(postId, {
     title,
     content,
+    tagNames,
   });
 
   if (!updatedPost) {
@@ -26,7 +35,7 @@ export async function updatePostAction(
   }
 
   revalidatePath("/");
-  revalidatePath(`/posts/${updatedPost.slug}`);
+  revalidatePath(`/posts/${updatedPost.id}`);
 
-  return { message: "성공", slug: updatedPost.slug };
+  return { message: "성공", postId: updatedPost.id };
 }
